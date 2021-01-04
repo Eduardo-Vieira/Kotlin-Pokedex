@@ -20,6 +20,8 @@ class PokedexFragment : Fragment() {
 
     private val pokedexViewModel: PokedexViewModel by viewModel()
 
+    private val adapter by lazy { PokemonAdapter() }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -37,13 +39,15 @@ class PokedexFragment : Fragment() {
         val recyclerView = recyclerView
         val layoutManager = GridLayoutManager(context, 2)
         recyclerView.layoutManager = layoutManager
+        recyclerView.adapter = adapter
 
-        pokedexViewModel.getListPokemon().observe(viewLifecycleOwner, Observer {
-            val pokemons: List<Pokemon> = it
-            recyclerView.adapter = PokemonAdapter(pokemons, view.context)
-            if (pokemons.isNotEmpty())
+        pokedexViewModel.listPokemon.observe(viewLifecycleOwner, Observer {
+           it.let {
+                adapter.update(it)
                 progressBar.visibility = View.GONE
+            }
         })
+        pokedexViewModel.getPokemonList()
 
         val speedDialView = speedDial
         speedDialView.inflate(R.menu.menu_pokedex)
@@ -69,11 +73,11 @@ class PokedexFragment : Fragment() {
 
     private fun showAllGen() {
         val dialog = GenerationFragment()
-        dialog.show(requireFragmentManager(), "")
+        dialog.show(parentFragmentManager, "")
     }
 
     private fun showSearch() {
         val dialog = SearchFragment()
-        dialog.show(requireFragmentManager(), "")
+        dialog.show(parentFragmentManager, "")
     }
 }

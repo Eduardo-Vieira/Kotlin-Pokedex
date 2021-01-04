@@ -17,8 +17,7 @@ import dev.marcosfarias.pokedex.utils.PokemonColorUtil
 import kotlinx.android.synthetic.main.item_pokemon.view.*
 
 class PokemonAdapter(
-    private val list: List<Pokemon>,
-    private val context: Context
+    private var list: List<Pokemon> = listOf()
 ) : RecyclerView.Adapter<PokemonAdapter.ViewHolder>() {
 
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -59,8 +58,13 @@ class PokemonAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.item_pokemon, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_pokemon, parent, false)
         return ViewHolder(view)
+    }
+
+    fun update(list: List<Pokemon>){
+        this.list = list
+        notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {

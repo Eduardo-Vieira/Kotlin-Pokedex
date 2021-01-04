@@ -63,7 +63,7 @@ Also available in Play Store
 - [x] [Navigation](https://developer.android.com/topic/libraries/architecture/navigation)
 - [x] [ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel)
 - [x] [Room](https://developer.android.com/topic/libraries/architecture/room)
-- [ ] [Coroutines](https://developer.android.com/topic/libraries/architecture/coroutines)
+- [x] [Coroutines](https://developer.android.com/topic/libraries/architecture/coroutines)
 - [x] [Gradle Kotlin DSL](https://docs.gradle.org/current/userguide/kotlin_dsl.html)
 - [x] [Databinding](https://developer.android.com/topic/libraries/data-binding)
 - [x] [Retrofit](https://square.github.io/retrofit/)

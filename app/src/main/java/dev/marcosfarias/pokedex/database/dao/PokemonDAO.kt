@@ -18,7 +18,7 @@ interface PokemonDAO {
     fun getEvolutionsByIds(evolutionIds: List<String>): LiveData<List<Pokemon>>
 
     @Query("SELECT * FROM pokemon")
-    fun all(): LiveData<List<Pokemon>>
+    fun all(): List<Pokemon>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun add(pokemon: List<Pokemon>)

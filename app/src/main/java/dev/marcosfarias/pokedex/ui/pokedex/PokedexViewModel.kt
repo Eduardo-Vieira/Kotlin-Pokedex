@@ -1,42 +1,40 @@
 package dev.marcosfarias.pokedex.ui.pokedex
 
 import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import dev.marcosfarias.pokedex.database.dao.PokemonDAO
+import androidx.lifecycle.viewModelScope
 import dev.marcosfarias.pokedex.model.Pokemon
-import dev.marcosfarias.pokedex.repository.PokemonService
-import kotlin.concurrent.thread
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import dev.marcosfarias.pokedex.ui.pokedex.repository.PokedexRepository
+import kotlinx.coroutines.launch
+import java.io.IOException
 
-class PokedexViewModel(private val pokemonDAO: PokemonDAO, private val pokemonService: PokemonService) : ViewModel() {
+class PokedexViewModel(private val repository: PokedexRepository) : ViewModel() {
 
-    init {
-        initNetworkRequest()
+    private val mListPokemon = MutableLiveData<List<Pokemon>>()
+    var listPokemon:LiveData<List<Pokemon>> = mListPokemon
+
+    private suspend fun getLocalData() {
+        mListPokemon.value = repository.getLocalPokemonList()
     }
 
-    private fun initNetworkRequest() {
-        val call = pokemonService.get()
-        call.enqueue(object : Callback<List<Pokemon>?> {
-            override fun onResponse(
-                call: Call<List<Pokemon>?>?,
-                response: Response<List<Pokemon>?>?
-            ) {
-                response?.body()?.let { pokemons: List<Pokemon> ->
-                    thread {
-                        pokemonDAO.add(pokemons)
+    fun getPokemonList() =
+        viewModelScope.launch {
+            try {
+                val result = repository.getRemotePokemonList()
+                if (result.isSuccessful) {
+                    result.body()?.let {
+                       if(it.isNotEmpty()) {
+                           repository.addPokemonDAO(it)
+                           mListPokemon.value = result.body()
+                       } else
+                           getLocalData()
                     }
-                }
-            }
+                } else
+                    getLocalData()
 
-            override fun onFailure(call: Call<List<Pokemon>?>?, t: Throwable?) {
-                // TODO handle failure
+            } catch (exception: IOException){
+                getLocalData()
             }
-        })
-    }
-
-    fun getListPokemon(): LiveData<List<Pokemon>> {
-        return pokemonDAO.all()
-    }
+        }
 }
